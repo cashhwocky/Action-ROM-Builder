@@ -45,19 +45,7 @@ jobs:
     permissions:
       contents: write
     steps:
-    - name: Check if sender is repository owner
-      if: github.event.repository.owner.login == github.event.sender.login
-      run: |
-        echo "Sender is the repository owner"
-    - name: Not the repository owner
-      if: github.event.repository.owner.login != github.event.sender.login
-      run: |
-        echo "Sender is not the repository owner"
-        exit 1
-
-    - name: Cleanup
-      uses: rokibhasansagar/slimhub_actions@main
-
+    
     - name: Initialize workspace
       run: |
         mkdir workspace
