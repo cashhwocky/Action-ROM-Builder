@@ -79,29 +79,26 @@ jobs:
         export CCACHE_DIR=${{ steps.pwd.outputs.workspace-folder }}/ccache/
         ccache -M 50G
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
-
-    - name: Clone and sync Lineage sources
+    - name: Clone LineageOS Source Base
       run: |
         cd ${{ steps.pwd.outputs.workspace-folder }}
         mkdir lineage
         cd lineage
-        repo init -u ${{ github.event.inputs.SYNC_URL }} -b ${{ github.event.inputs.MANIFEST_BRANCH }} --git-lfs
-        repo sync
+        repo init -u https://github.com -b lineage-21.0 --git-lfs --depth=1
+        repo sync -c -j$(nproc --all) --force-sync --no-clone-bundle --no-tags
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    - name: Clone device tree
+    - name: Clone Unified Pixel 10 Device Tree
       run: |
         cd ${{ steps.pwd.outputs.workspace-folder }}/lineage/
-        git clone ${{ github.event.inputs.DEVICE_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.DEVICE_PATH }}
+        git clone https://github.com -b lineage-21.0 device/google/muzel
+        ln -s muzel device/google/frankel
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
-    - name: Clone common tree
-      if: |
-        github.event.inputs.COMMON_TREE_URL != null
-        && github.event.inputs.COMMON_PATH != null
+    - name: Clone Proprietary Tensor G5 Audio Drivers
       run: |
         cd ${{ steps.pwd.outputs.workspace-folder }}/lineage/
-        git clone ${{ github.event.inputs.COMMON_TREE_URL }} -b ${{ github.event.inputs.DEVICE_TREE_BRANCH }} ./${{ github.event.inputs.COMMON_PATH }}
+        git clone https://github.com -b lineage-21.0 vendor/google/frankel
       working-directory: ${{ steps.pwd.outputs.workspace-folder }}
 
     - name: Set Swap Space
